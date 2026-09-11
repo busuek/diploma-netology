@@ -129,3 +129,69 @@ ssh -i ~/.ssh/id_rsa -L 5601:10.1.0.6:5601 ubuntu@111.88.248.183 -N
 ├── docs/screenshots/           # Скриншоты
 └── README.md
 
+### Развертывание
+
+### 1. Terraform
+
+```bash
+cd terraform
+# Создать key.json (сервисный аккаунт Yandex Cloud)
+cp terraform.tfvars.example terraform.tfvars
+# Заполнить cloud_id, folder_id
+terraform init
+terraform apply
+```
+
+### 2. Ansible
+
+```bash
+cd ansible
+# Запустить плейбуки по порядку:
+ansible-playbook -i inventory.ini playbook-nginx.yml
+ansible-playbook -i inventory.ini playbook-zabbix-agent.yml
+ansible-playbook -i inventory.ini playbook-zabbix-server.yml
+ansible-playbook -i inventory.ini playbook-docker.yml
+ansible-playbook -i inventory.ini playbook-elasticsearch.yml
+ansible-playbook -i inventory.ini playbook-kibana.yml
+ansible-playbook -i inventory.ini playbook-filebeat.yml
+```
+
+### Тестирование
+
+### Сайт через Load Balancer
+
+```bash
+curl -v http://158.160.188.134
+# HTTP/1.1 200 OK
+# <h1>Web Server web1</h1> или <h1>Web Server web2</h1>
+```
+
+Балансировка проверена через check-host.net — отвечает 200 OK с 8+ точек мира (Россия, США, Испания, Сербия, Вьетнам, Украина и др.).
+
+### Zabbix (внутренний доступ)
+
+```bash
+ssh -i ~/.ssh/id_rsa ubuntu@111.88.248.183 "curl -I http://10.1.0.10/zabbix"
+# HTTP/1.1 301 Moved Permanently
+```
+
+### Kibana (внутренний доступ)
+
+```bash
+ssh -i ~/.ssh/id_rsa ubuntu@111.88.248.183 "curl -s http://10.1.0.6:5601/api/status"
+# {"status":{"overall":{"level":"available"}}}
+```
+
+### Elasticsearch с авторизацией
+
+```bash
+ssh -i ~/.ssh/id_rsa ubuntu@111.88.248.183 "curl -s -u elastic:ElasticPass123! http://10.4.0.17:9200"
+# JSON с информацией о кластере
+```
+
+### Логи Nginx в Elasticsearch
+
+```bash
+ssh -i ~/.ssh/id_rsa ubuntu@111.88.248.183 "curl -s -u elastic:ElasticPass123! 'http://10.4.0.17:9200/_cat/indices?v'"
+# .ds-nginx-logs-8.11.0-* с docs.count > 2000
+```
