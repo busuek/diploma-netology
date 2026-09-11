@@ -95,40 +95,6 @@ ssh -i ~/.ssh/id_rsa -L 5601:10.1.0.6:5601 ubuntu@111.88.248.183 -N
 
   - Все 6 дисков ВМ
 
-### Структура репозитория
-
-.
-├── terraform/
-│   ├── main.tf                 # Провайдер Yandex Cloud
-│   ├── variables.tf            # Переменные
-│   ├── network.tf              # VPC, подсети, NAT, route table
-│   ├── security_groups.tf      # Security Groups
-│   ├── instances.tf            # Виртуальные машины
-│   ├── images.tf               # Data source для образа Ubuntu
-│   ├── load_balancer.tf        # ALB: Target/Backend/HTTP Router/LB
-│   ├── snapshots.tf            # Snapshot Schedule
-│   ├── outputs.tf              # IP и FQDN
-│   └── terraform.tfvars.example
-├── ansible/
-│   ├── inventory.ini           # Inventory с ProxyCommand через bastion
-│   ├── playbook-nginx.yml
-│   ├── playbook-zabbix-agent.yml
-│   ├── playbook-zabbix-server.yml
-│   ├── playbook-docker.yml
-│   ├── playbook-elasticsearch.yml
-│   ├── playbook-kibana.yml
-│   ├── playbook-filebeat.yml
-│   └── roles/
-│       ├── nginx/
-│       ├── zabbix_agent/
-│       ├── zabbix_server/
-│       ├── docker/
-│       ├── elasticsearch/
-│       ├── kibana/
-│       └── filebeat/
-├── docs/screenshots/           # Скриншоты
-└── README.md
-
 ### Развертывание
 
 ### 1. Terraform
