@@ -1,0 +1,24 @@
+---
+- name: Install nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: no
+  become: yes
+
+- name: Copy index.html
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    owner: www-data
+    group: www-data
+    mode: '0644'
+  become: yes
+  notify: restart nginx
+
+- name: Enable and start nginx
+  systemd:
+    name: nginx
+    enabled: yes
+    state: started
+  become: yes

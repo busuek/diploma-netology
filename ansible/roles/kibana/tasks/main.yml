@@ -1,0 +1,27 @@
+---
+- name: Run Kibana container with authentication
+  docker_container:
+    name: kibana
+    image: "docker.elastic.co/kibana/kibana:{{ elastic_version }}"
+    state: started
+    restart_policy: always
+    ports:
+      - "5601:5601"
+    env:
+      ELASTICSEARCH_HOSTS: "http://{{ elasticsearch_host }}:9200"
+      ELASTICSEARCH_USERNAME: "kibana_system"
+      ELASTICSEARCH_PASSWORD: "{{ kibana_password }}"
+      XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: "{{ kibana_encryption_key }}"
+      XPACK_SECURITY_ENCRYPTIONKEY: "{{ kibana_encryption_key }}"
+      XPACK_REPORTING_ENCRYPTIONKEY: "{{ kibana_encryption_key }}"
+  become: yes
+
+- name: Wait for Kibana to be ready
+  uri:
+    url: "http://localhost:5601/api/status"
+    status_code: 200
+  register: kibana_result
+  until: kibana_result.status == 200
+  retries: 30
+  delay: 10
+  become: yes

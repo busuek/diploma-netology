@@ -1,0 +1,6 @@
+---
+- name: Install Docker on elastic stack hosts and web servers
+  hosts: elastic_stack:web_hosts
+  become: yes
+  roles:
+    - docker

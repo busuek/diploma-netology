@@ -1,0 +1,115 @@
+---
+- name: Install MySQL server
+  apt:
+    name:
+      - mysql-server
+      - python3-pymysql
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: Ensure MySQL is started
+  systemd:
+    name: mysql
+    enabled: yes
+    state: started
+  become: yes
+
+- name: Allow log_bin_trust_function_creators
+  mysql_variables:
+    variable: log_bin_trust_function_creators
+    value: "1"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  become: yes
+
+- name: Create Zabbix database
+  mysql_db:
+    name: "{{ zabbix_db_name }}"
+    encoding: utf8mb4
+    collation: utf8mb4_bin
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  become: yes
+
+- name: Create Zabbix database user
+  mysql_user:
+    name: "{{ zabbix_db_user }}"
+    password: "{{ zabbix_db_password }}"
+    priv: "{{ zabbix_db_name }}.*:ALL"
+    host: localhost
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  become: yes
+
+- name: Download zabbix-release package
+  get_url:
+    url: "https://repo.zabbix.com/zabbix/{{ zabbix_version }}/ubuntu/pool/main/z/zabbix-release/zabbix-release_{{ zabbix_version }}-1+ubuntu22.04_all.deb"
+    dest: /tmp/zabbix-release.deb
+    mode: '0644'
+  become: yes
+
+- name: Install zabbix-release
+  apt:
+    deb: /tmp/zabbix-release.deb
+  become: yes
+
+- name: Install Zabbix server, frontend, agent
+  apt:
+    name:
+      - zabbix-server-mysql
+      - zabbix-frontend-php
+      - zabbix-apache-conf
+      - zabbix-sql-scripts
+      - zabbix-agent
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: Check if Zabbix DB is already initialized
+  stat:
+    path: /var/lib/mysql/{{ zabbix_db_name }}/users.ibd
+  register: zabbix_db_check
+  become: yes
+
+- name: Import Zabbix database schema
+  shell: |
+    zcat /usr/share/zabbix-sql-scripts/mysql/server.sql.gz | mysql --default-character-set=utf8mb4 {{ zabbix_db_name }}
+  when: not zabbix_db_check.stat.exists
+  become: yes
+
+- name: Configure Zabbix server DB password
+  lineinfile:
+    path: /etc/zabbix/zabbix_server.conf
+    regexp: '^# DBPassword='
+    line: 'DBPassword={{ zabbix_db_password }}'
+  become: yes
+  notify: restart zabbix-server
+
+- name: Configure PHP timezone
+  lineinfile:
+    path: /etc/zabbix/apache.conf
+    regexp: '^\s*# php_value date.timezone'
+    line: '        php_value date.timezone {{ zabbix_timezone }}'
+  become: yes
+  notify: restart apache2
+
+- name: Enable and start Zabbix server
+  systemd:
+    name: zabbix-server
+    enabled: yes
+    state: started
+  become: yes
+
+- name: Enable and start Zabbix agent
+  systemd:
+    name: zabbix-agent
+    enabled: yes
+    state: started
+  become: yes
+
+- name: Enable and start Apache
+  systemd:
+    name: apache2
+    enabled: yes
+    state: started
+  become: yes

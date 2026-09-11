@@ -1,0 +1,36 @@
+---
+- name: Download zabbix-release package
+  get_url:
+    url: "https://repo.zabbix.com/zabbix/{{ zabbix_agent_version }}/ubuntu/pool/main/z/zabbix-release/zabbix-release_{{ zabbix_agent_version }}-1+ubuntu22.04_all.deb"
+    dest: /tmp/zabbix-release.deb
+    mode: '0644'
+  become: yes
+
+- name: Install zabbix-release
+  apt:
+    deb: /tmp/zabbix-release.deb
+  become: yes
+
+- name: Install zabbix-agent
+  apt:
+    name: zabbix-agent
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: Configure zabbix agent
+  template:
+    src: zabbix_agentd.conf.j2
+    dest: /etc/zabbix/zabbix_agentd.conf
+    owner: root
+    group: root
+    mode: '0644'
+  become: yes
+  notify: restart zabbix-agent
+
+- name: Enable and start zabbix-agent
+  systemd:
+    name: zabbix-agent
+    enabled: yes
+    state: started
+  become: yes

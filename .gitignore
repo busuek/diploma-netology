@@ -1,0 +1,26 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+terraform.tfvars
+*.tfvars
+!example.tfvars
+crash.log
+
+# Ansible
+*.retry
+ansible/inventory/hosts
+*.vault
+
+# SSH keys
+*.pem
+*.key
+id_rsa*
+!id_rsa.pub
+
+# Прочее
+.env
+*.log
+*.json
+key.json

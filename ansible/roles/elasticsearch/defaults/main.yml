@@ -1,0 +1,6 @@
+---
+elastic_version: "8.11.0"
+elastic_password: "{{ vault_elastic_password | default('ElasticPass123!') }}"
+kibana_password: "{{ vault_kibana_password | default('KibanaPass123!') }}"
+elasticsearch_heap: "512m"
+elasticsearch_data_dir: "/opt/elasticsearch/data"

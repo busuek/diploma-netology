@@ -1,0 +1,5 @@
+---
+elastic_version: "8.11.0"
+elasticsearch_host: "10.4.0.17"
+elastic_user: "elastic"
+elastic_password: "{{ vault_elastic_password | default('ElasticPass123!') }}"

@@ -1,0 +1,6 @@
+---
+- name: Install Filebeat on web servers
+  hosts: web_hosts
+  become: yes
+  roles:
+    - filebeat

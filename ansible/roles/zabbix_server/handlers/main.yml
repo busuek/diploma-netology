@@ -1,0 +1,12 @@
+---
+- name: restart zabbix-server
+  systemd:
+    name: zabbix-server
+    state: restarted
+  become: yes
+
+- name: restart apache2
+  systemd:
+    name: apache2
+    state: restarted
+  become: yes

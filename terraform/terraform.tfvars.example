@@ -1,0 +1,5 @@
+# Скопируй этот файл в terraform.tfvars и заполни своими значениями
+# terraform.tfvars НЕ коммитится в git (добавлен в .gitignore)
+
+cloud_id  = "b1g14k31j888mebcvj9q"
+folder_id = "b1gvvv83f4cn3g314mrn"

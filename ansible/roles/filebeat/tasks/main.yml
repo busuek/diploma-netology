@@ -1,0 +1,26 @@
+---
+- name: Ensure config directory exists
+  file:
+    path: /etc/filebeat
+    state: directory
+    mode: '0755'
+  become: yes
+
+- name: Deploy filebeat config
+  template:
+    src: filebeat.yml.j2
+    dest: /etc/filebeat/filebeat.yml
+    mode: '0644'
+  become: yes
+
+- name: Run Filebeat container
+  docker_container:
+    name: filebeat
+    image: "docker.elastic.co/beats/filebeat:{{ elastic_version }}"
+    state: started
+    restart_policy: always
+    user: root
+    volumes:
+      - "/var/log/nginx:/var/log/nginx:ro"
+      - "/etc/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro"
+  become: yes

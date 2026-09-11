@@ -1,0 +1,6 @@
+---
+- name: Install Kibana
+  hosts: kibana_hosts
+  become: yes
+  roles:
+    - kibana
