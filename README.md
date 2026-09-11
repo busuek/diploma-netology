@@ -161,3 +161,10 @@ ssh -i ~/.ssh/id_rsa ubuntu@111.88.248.183 "curl -s -u elastic:ElasticPass123! h
 ssh -i ~/.ssh/id_rsa ubuntu@111.88.248.183 "curl -s -u elastic:ElasticPass123! 'http://10.4.0.17:9200/_cat/indices?v'"
 # .ds-nginx-logs-8.11.0-* с docs.count > 2000
 ```
+
+### Скриншоты:
+<img width="1366" height="697" alt="kibana-nginx-logs" src="https://github.com/user-attachments/assets/1be13902-09b1-43d2-982f-3d10e6a53edf" />
+
+<img width="1366" height="699" alt="site-via-lb" src="https://github.com/user-attachments/assets/3dd468d0-3eea-4615-9b4e-0b15bf617ac1" />
+
+<img width="1366" height="696" alt="zabbix-use-dashboard" src="https://github.com/user-attachments/assets/ebb76305-4b4f-464a-8d1e-a47796ea591a" />
